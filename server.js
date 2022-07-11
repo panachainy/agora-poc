@@ -21,9 +21,6 @@ const authToken = Buffer.from(`${customerId}:${customerSecret}`).toString(
 app.post("/acquire", async (req, res) => {
   const Authorization = `Basic ${authToken}`;
 
-  console.log("req.body", req.body);
-  console.log("appID", appID);
-
   try {
     const acquire = await axios.post(
       `https://api.agora.io/v1/apps/${appID}/cloud_recording/acquire`,
@@ -39,8 +36,8 @@ app.post("/acquire", async (req, res) => {
 
     res.send(acquire.data);
   } catch (e) {
-    console.log("error", e.response.status);
-    console.log("error", e.response.data);
+    console.log("error status:", e.response.status);
+    console.log("error response data:", e.response.data);
 
     res.status(400);
     res.send();
