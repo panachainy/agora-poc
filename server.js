@@ -31,13 +31,12 @@ app.post("/acquire", async (req, res) => {
       { headers: { Authorization } }
     );
 
-    res.send(acquire.data);
+    res.status(200).send(acquire.data);
   } catch (e) {
     console.log("error status:", e.response.status);
     console.log("error response data:", e.response.data);
 
-    res.status(400);
-    res.send();
+    res.status(400).send(e.response.data);
   }
 });
 
@@ -92,7 +91,7 @@ app.post("/start", async (req, res) => {
     );
     res.status(200).send(body);
   } catch (e) {
-    res.status(e.response.status).send(e);
+    res.status(e.response.status).send(e.response.data);
   }
 });
 
