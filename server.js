@@ -7,6 +7,7 @@ const app = express();
 app.use(express.json());
 
 const appID = process.env.AGORA_APP_ID;
+
 const appCertificate = "<-- Your app certificate here -->";
 const uid = Math.floor(Math.random() * 100000);
 
@@ -16,7 +17,7 @@ const customerSecret = process.env.AGORA_CUSTOMER_SECRET;
 const Authorization =
   "Basic " + Buffer.from(`${customerId}:${customerSecret}`).toString("base64");
 
-// step 1
+// Step 1
 app.post("/acquire", async (req, res) => {
   try {
     const acquire = await axios.post(
@@ -31,6 +32,8 @@ app.post("/acquire", async (req, res) => {
       { headers: { Authorization } }
     );
 
+    console.log("acquire", acquire);
+
     res.status(200).send(acquire.data);
   } catch (e) {
     console.log("error status:", e.response.status);
@@ -40,7 +43,7 @@ app.post("/acquire", async (req, res) => {
   }
 });
 
-// step 2
+// Step 2
 app.post("/start", async (req, res) => {
   const resource = req.body.resource;
   const mode = req.body.mode;
@@ -49,8 +52,8 @@ app.post("/start", async (req, res) => {
   const bucket = process.env.S3_BUCKET;
   const accessKey = process.env.S3_ACCESS_KEY;
   const secretKey = process.env.S3_SECRET_KEY;
-  const region = process.env.S3_REGION;
-  const vendor = process.env.S3_VENDOR;
+  const region = parseInt(process.env.S3_REGION);
+  const vendor = parseInt(process.env.S3_VENDOR);
 
   try {
     const start = await axios.post(
@@ -58,6 +61,7 @@ app.post("/start", async (req, res) => {
       {
         cname: req.body.channel,
         uid: req.body.uid,
+        // token: 'xxxxxxx',
         clientRequest: {
           recordingConfig: {
             maxIdleTime: 30,
