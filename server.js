@@ -43,7 +43,7 @@ const sendAcquire = async (appID, channel, uid) => {
   }
 };
 
-const sendStart = async (appID, resource, mode,channel,uid) => {
+const sendStart = async (appID, resource, mode, channel, uid) => {
   const bucket = process.env.S3_BUCKET;
   const accessKey = process.env.S3_ACCESS_KEY;
   const secretKey = process.env.S3_SECRET_KEY;
@@ -100,6 +100,29 @@ const sendStart = async (appID, resource, mode,channel,uid) => {
   }
 };
 
+const sendStop = async (resource, sid, mode, channel, uid) => {
+  try {
+    const stop = await axios.post(
+      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
+      {
+        cname: channel,
+        uid,
+        clientRequest: {},
+      },
+      { headers: { Authorization } }
+    );
+    return {
+      status: 200,
+      data: start.data,
+    };
+  } catch (e) {
+    return {
+      status: e.response.status,
+      data: e.response.data,
+    };
+  }
+};
+
 // Step 1
 app.post("/acquire", async (req, res) => {
   const { status, data } = await sendAcquire(
@@ -126,24 +149,15 @@ app.post("/start", async (req, res) => {
 
 // Step 3
 app.post("/stop", async (req, res) => {
-  const resource = req.body.resource;
-  const sid = req.body.sid;
-  const mode = req.body.mode;
+  const { status, data } = await sendStop(
+    req.body.resource,
+    req.body.sid,
+    req.body.mode,
+    req.body.channel,
+    req.body.uid
+  );
 
-  try {
-    const stop = await axios.post(
-      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
-      {
-        cname: req.body.channel,
-        uid: req.body.uid,
-        clientRequest: {},
-      },
-      { headers: { Authorization } }
-    );
-    res.status(200).send(stop.data);
-  } catch (e) {
-    res.status(e.response.status).send(e.response.data);
-  }
+  res.status(status).send(data);
 });
 
 app.post("/query", async (req, res) => {
