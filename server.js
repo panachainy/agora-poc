@@ -32,8 +32,6 @@ app.post("/acquire", async (req, res) => {
       { headers: { Authorization } }
     );
 
-    console.log("acquire", acquire);
-
     res.status(200).send(acquire.data);
   } catch (e) {
     console.log("error status:", e.response.status);
@@ -93,7 +91,46 @@ app.post("/start", async (req, res) => {
       },
       { headers: { Authorization } }
     );
-    res.status(200).send(body);
+    res.status(200).send(start.data);
+  } catch (e) {
+    res.status(e.response.status).send(e.response.data);
+  }
+});
+
+// Step 3
+app.post("/stop", async (req, res) => {
+  const resource = req.body.resource;
+  const sid = req.body.sid;
+  const mode = req.body.mode;
+
+  try {
+    const stop = await axios.post(
+      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
+      {
+        cname: req.body.channel,
+        uid: req.body.uid,
+        clientRequest: {},
+      },
+      { headers: { Authorization } }
+    );
+    res.status(200).send(stop.data);
+  } catch (e) {
+    res.status(e.response.status).send(e.response.data);
+  }
+});
+
+app.post("/query", async (req, res) => {
+  const resource = req.body.resource;
+  const sid = req.body.sid;
+  const mode = req.body.mode;
+
+  try {
+    const response = await axios.get(
+      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
+      { headers: { Authorization } }
+    );
+
+    res.status(200).send(response.data);
   } catch (e) {
     res.status(e.response.status).send(e.response.data);
   }
