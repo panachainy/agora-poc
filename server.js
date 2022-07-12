@@ -195,44 +195,40 @@ app.post("/record-debug", async (req, res) => {
     req.body.channel,
     req.body.uid
   );
-
   if (acquireResponse.status != 200) {
     res.status(acquireResponse.status).send(acquireResponse.data);
     console.log("err1 sendAcquire");
   }
 
+  const resourceId = acquireResponse.data.resourceId;
+
   const startResponse = await sendStart(
     appID,
-    acquireResponse.data.resourceId,
+    resourceId,
     req.body.mode,
     req.body.channel,
     req.body.uid
   );
-
   if (startResponse.status != 200) {
     res.status(startResponse.status).send(startResponse.data);
     console.log("err2 sendStart");
   }
 
-  const queryRes = await sendQuery(
-    acquireResponse.data.resourceId,
-    startResponse.data.sid,
-    req.body.mode
-  );
+  const sid = startResponse.data.sid;
 
+  const queryRes = await sendQuery(resourceId, sid, req.body.mode);
   if (queryRes.status != 200) {
     res.status(queryRes.status).send(queryRes.data);
     console.log("err3 sendQuery");
   }
 
   const stopRes = await sendStop(
-    acquireResponse.data.resourceId,
-    startResponse.data.sid,
+    resourceId,
+    sid,
     req.body.mode,
     req.body.channel,
     req.body.uid
   );
-
   if (stopRes.status != 200) {
     res.status(stopRes.status).send(stopRes.data);
     console.log("err4 sendStop");
