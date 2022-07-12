@@ -189,6 +189,58 @@ app.post("/query", async (req, res) => {
   res.status(status).send(data);
 });
 
+app.post("/record-debug", async (req, res) => {
+  const { status, data } = await sendAcquire(
+    appID,
+    req.body.channel,
+    req.body.uid
+  );
+
+  if (status != 200) {
+    res.status(status).send(data);
+    console.log("err3 sendAcquire");
+  }
+
+  const { status2, data2 } = await sendStart(
+    appID,
+    req.body.resource,
+    req.body.mode,
+    req.body.channel,
+    req.body.uid
+  );
+
+  if (status != 200) {
+    res.status(status2).send(data2);
+    console.log("err3 sendStart");
+  }
+
+  const { status3, data3 } = await sendQuery(
+    req.body.resource,
+    req.body.sid,
+    req.body.mode
+  );
+
+  if (status != 200) {
+    res.status(status3).send(data3);
+    console.log("err3 sendQuery");
+  }
+
+  const { status4, data4 } = await sendStop(
+    req.body.resource,
+    req.body.sid,
+    req.body.mode,
+    req.body.channel,
+    req.body.uid
+  );
+
+  if (status != 200) {
+    res.status(status4).send(data4);
+    console.log("err4 sendStop");
+  }
+
+  res.status(status4).send(data4);
+});
+
 app.get("/", (req, res) => res.send("Agora Cloud Recording Server"));
 
 const port = process.env.PORT || 3000;
