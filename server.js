@@ -198,7 +198,7 @@ app.post("/record-debug", async (req, res) => {
 
   if (acquireResponse.status != 200) {
     res.status(acquireResponse.status).send(acquireResponse.data);
-    console.log("err3 sendAcquire");
+    console.log("err1 sendAcquire");
   }
 
   const startResponse = await sendStart(
@@ -211,7 +211,7 @@ app.post("/record-debug", async (req, res) => {
 
   if (startResponse.status != 200) {
     res.status(startResponse.status).send(startResponse.data);
-    console.log("err3 sendStart");
+    console.log("err2 sendStart");
   }
 
   const queryRes = await sendQuery(
