@@ -113,7 +113,7 @@ const sendStop = async (resource, sid, mode, channel, uid) => {
     );
     return {
       status: 200,
-      data: start.data,
+      data: stop.data,
     };
   } catch (e) {
     return {
@@ -132,7 +132,7 @@ const sendQuery = async (resource, sid, mode) => {
 
     return {
       status: 200,
-      data: start.data,
+      data: response.data,
     };
   } catch (e) {
     return {
