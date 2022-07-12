@@ -17,14 +17,13 @@ const customerSecret = process.env.AGORA_CUSTOMER_SECRET;
 const Authorization =
   "Basic " + Buffer.from(`${customerId}:${customerSecret}`).toString("base64");
 
-// Step 1
-app.post("/acquire", async (req, res) => {
+const sendAcquire = async (appID, channel, uid) => {
   try {
     const acquire = await axios.post(
       `https://api.agora.io/v1/apps/${appID}/cloud_recording/acquire`,
       {
-        cname: req.body.channel,
-        uid: req.body.uid,
+        cname: channel,
+        uid: uid,
         clientRequest: {
           resourceExpiredHour: 24,
         },
@@ -32,13 +31,28 @@ app.post("/acquire", async (req, res) => {
       { headers: { Authorization } }
     );
 
-    res.status(200).send(acquire.data);
+    return {
+      status: 200,
+      data: acquire.data,
+    };
   } catch (e) {
-    console.log("error status:", e.response.status);
-    console.log("error response data:", e.response.data);
-
     res.status(400).send(e.response.data);
+    return {
+      status: e.response.status,
+      data: e.response.data,
+    };
   }
+};
+
+// Step 1
+app.post("/acquire", async (req, res) => {
+  const { status, data } = await sendAcquire(
+    appID,
+    req.body.channel,
+    req.body.uid
+  );
+
+  res.status(status).send(data);
 });
 
 // Step 2
