@@ -123,6 +123,25 @@ const sendStop = async (resource, sid, mode, channel, uid) => {
   }
 };
 
+const sendQuery = async (resource, sid, mode) => {
+  try {
+    const response = await axios.get(
+      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
+      { headers: { Authorization } }
+    );
+
+    return {
+      status: 200,
+      data: start.data,
+    };
+  } catch (e) {
+    return {
+      status: e.response.status,
+      data: e.response.data,
+    };
+  }
+};
+
 // Step 1
 app.post("/acquire", async (req, res) => {
   const { status, data } = await sendAcquire(
@@ -161,20 +180,13 @@ app.post("/stop", async (req, res) => {
 });
 
 app.post("/query", async (req, res) => {
-  const resource = req.body.resource;
-  const sid = req.body.sid;
-  const mode = req.body.mode;
+  const { status, data } = await sendQuery(
+    req.body.resource,
+    req.body.sid,
+    req.body.mode
+  );
 
-  try {
-    const response = await axios.get(
-      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
-      { headers: { Authorization } }
-    );
-
-    res.status(200).send(response.data);
-  } catch (e) {
-    res.status(e.response.status).send(e.response.data);
-  }
+  res.status(status).send(data);
 });
 
 app.get("/", (req, res) => res.send("Agora Cloud Recording Server"));
