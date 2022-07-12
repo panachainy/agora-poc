@@ -36,7 +36,6 @@ const sendAcquire = async (appID, channel, uid) => {
       data: acquire.data,
     };
   } catch (e) {
-    res.status(400).send(e.response.data);
     return {
       status: e.response.status,
       data: e.response.data,
@@ -44,23 +43,7 @@ const sendAcquire = async (appID, channel, uid) => {
   }
 };
 
-// Step 1
-app.post("/acquire", async (req, res) => {
-  const { status, data } = await sendAcquire(
-    appID,
-    req.body.channel,
-    req.body.uid
-  );
-
-  res.status(status).send(data);
-});
-
-// Step 2
-app.post("/start", async (req, res) => {
-  const resource = req.body.resource;
-  const mode = req.body.mode;
-
-  const appID = process.env.AGORA_APP_ID;
+const sendStart = async (appID, resource, mode,channel,uid) => {
   const bucket = process.env.S3_BUCKET;
   const accessKey = process.env.S3_ACCESS_KEY;
   const secretKey = process.env.S3_SECRET_KEY;
@@ -71,8 +54,8 @@ app.post("/start", async (req, res) => {
     const start = await axios.post(
       `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
       {
-        cname: req.body.channel,
-        uid: req.body.uid,
+        cname: channel,
+        uid: uid,
         // token: 'xxxxxxx',
         clientRequest: {
           recordingConfig: {
@@ -105,10 +88,40 @@ app.post("/start", async (req, res) => {
       },
       { headers: { Authorization } }
     );
-    res.status(200).send(start.data);
+    return {
+      status: 200,
+      data: start.data,
+    };
   } catch (e) {
-    res.status(e.response.status).send(e.response.data);
+    return {
+      status: e.response.status,
+      data: e.response.data,
+    };
   }
+};
+
+// Step 1
+app.post("/acquire", async (req, res) => {
+  const { status, data } = await sendAcquire(
+    appID,
+    req.body.channel,
+    req.body.uid
+  );
+
+  res.status(status).send(data);
+});
+
+// Step 2
+app.post("/start", async (req, res) => {
+  const { status, data } = await sendStart(
+    appID,
+    req.body.resource,
+    req.body.mode,
+    req.body.channel,
+    req.body.uid
+  );
+
+  res.status(status).send(data);
 });
 
 // Step 3
