@@ -190,55 +190,55 @@ app.post("/query", async (req, res) => {
 });
 
 app.post("/record-debug", async (req, res) => {
-  const { status, data } = await sendAcquire(
+  const acquireResponse = await sendAcquire(
     appID,
     req.body.channel,
     req.body.uid
   );
 
-  if (status != 200) {
-    res.status(status).send(data);
+  if (acquireResponse.status != 200) {
+    res.status(acquireResponse.status).send(acquireResponse.data);
     console.log("err3 sendAcquire");
   }
 
-  const { status2, data2 } = await sendStart(
+  const startResponse = await sendStart(
     appID,
-    req.body.resource,
+    acquireResponse.data.resourceId,
     req.body.mode,
     req.body.channel,
     req.body.uid
   );
 
-  if (status != 200) {
-    res.status(status2).send(data2);
+  if (startResponse.status != 200) {
+    res.status(startResponse.status).send(startResponse.data);
     console.log("err3 sendStart");
   }
 
-  const { status3, data3 } = await sendQuery(
-    req.body.resource,
-    req.body.sid,
+  const queryRes = await sendQuery(
+    acquireResponse.data.resourceId,
+    startResponse.data.sid,
     req.body.mode
   );
 
-  if (status != 200) {
-    res.status(status3).send(data3);
+  if (queryRes.status != 200) {
+    res.status(queryRes.status).send(queryRes.data);
     console.log("err3 sendQuery");
   }
 
-  const { status4, data4 } = await sendStop(
-    req.body.resource,
-    req.body.sid,
+  const stopRes = await sendStop(
+    acquireResponse.data.resourceId,
+    startResponse.data.sid,
     req.body.mode,
     req.body.channel,
     req.body.uid
   );
 
-  if (status != 200) {
-    res.status(status4).send(data4);
+  if (stopRes.status != 200) {
+    res.status(stopRes.status).send(stopRes.data);
     console.log("err4 sendStop");
   }
 
-  res.status(status4).send(data4);
+  res.status(stopRes.status).send(stopRes.data);
 });
 
 app.get("/", (req, res) => res.send("Agora Cloud Recording Server"));
