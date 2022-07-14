@@ -18,7 +18,7 @@ const Authorization =
   "Basic " + Buffer.from(`${customerId}:${customerSecret}`).toString("base64");
 
 const sendGetToken = () => {
-  cname;
+  return process.env.AGORA_TEMP_TOKEN;
 };
 
 const sendAcquire = async (appID, channel, uid) => {
@@ -29,7 +29,7 @@ const sendAcquire = async (appID, channel, uid) => {
         cname: channel,
         uid: uid,
         clientRequest: {
-          // token: 'xxxxxxx',
+          // token: sendGetToken(),
           resourceExpiredHour: 24,
         },
       },
@@ -62,7 +62,7 @@ const sendStart = async (appID, resource, mode, channel, uid) => {
         uid: uid,
         cname: channel,
         clientRequest: {
-          // token: 'xxxxxxx',
+          // token: sendGetToken(),
           recordingConfig: {
             maxIdleTime: 30,
             // Both audio and video streams.
@@ -116,7 +116,9 @@ const sendStop = async (resource, sid, mode, channel, uid) => {
       {
         cname: channel,
         uid,
-        clientRequest: {},
+        clientRequest: {
+          // token: sendGetToken(),
+        },
       },
       { headers: { Authorization } }
     );
