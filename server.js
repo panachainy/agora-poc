@@ -8,14 +8,18 @@ app.use(express.json());
 
 const appID = process.env.AGORA_APP_ID;
 
-const appCertificate = "<-- Your app certificate here -->";
-const uid = Math.floor(Math.random() * 100000);
+// const appCertificate = "<-- Your app certificate here -->";
+// const uid = Math.floor(Math.random() * 100000);
 
 const customerId = process.env.AGORA_CUSTOMER_ID;
 const customerSecret = process.env.AGORA_CUSTOMER_SECRET;
 
 const Authorization =
   "Basic " + Buffer.from(`${customerId}:${customerSecret}`).toString("base64");
+
+const sendGetToken = () => {
+  cname;
+};
 
 const sendAcquire = async (appID, channel, uid) => {
   try {
@@ -25,6 +29,7 @@ const sendAcquire = async (appID, channel, uid) => {
         cname: channel,
         uid: uid,
         clientRequest: {
+          // token: 'xxxxxxx',
           resourceExpiredHour: 24,
         },
       },
@@ -54,14 +59,15 @@ const sendStart = async (appID, resource, mode, channel, uid) => {
     const start = await axios.post(
       `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
       {
-        cname: channel,
         uid: uid,
-        // token: 'xxxxxxx',
+        cname: channel,
         clientRequest: {
+          // token: 'xxxxxxx',
           recordingConfig: {
             maxIdleTime: 30,
             // Both audio and video streams.
             streamTypes: 2,
+            // audioProfile: 1,
             channelType: 0,
             videoStreamType: 0,
             transcodingConfig: {
@@ -72,9 +78,12 @@ const sendStart = async (appID, resource, mode, channel, uid) => {
               mixedVideoLayout: 1,
               backgroundColor: "#FFFFFF",
             },
+            // subscribeVideoUids: ["123", "456"],
+            // subscribeAudioUids: ["123", "456"],
+            // subscribeUidGroup: 0,
           },
           recordingFileConfig: {
-            avFileType: ["hls"],
+            avFileType: ["hls", "mp4"],
           },
           storageConfig: {
             vendor: vendor,
@@ -82,7 +91,7 @@ const sendStart = async (appID, resource, mode, channel, uid) => {
             bucket: bucket,
             accessKey: accessKey,
             secretKey: secretKey,
-            fileNamePrefix: ["videos"],
+            fileNamePrefix: ["videos", "test"],
           },
         },
       },
@@ -239,6 +248,7 @@ app.post("/record-debug", async (req, res) => {
   }
 
   res.status(stopRes.status).send(stopRes.data);
+  return;
 });
 
 app.get("/", (req, res) => res.send("Agora Cloud Recording Server"));
