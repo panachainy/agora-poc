@@ -198,6 +198,7 @@ app.post("/record-debug", async (req, res) => {
   if (acquireResponse.status != 200) {
     res.status(acquireResponse.status).send(acquireResponse.data);
     console.log("err1 sendAcquire");
+    return;
   }
 
   const resourceId = acquireResponse.data.resourceId;
@@ -212,6 +213,7 @@ app.post("/record-debug", async (req, res) => {
   if (startResponse.status != 200) {
     res.status(startResponse.status).send(startResponse.data);
     console.log("err2 sendStart");
+    return;
   }
 
   const sid = startResponse.data.sid;
@@ -220,6 +222,7 @@ app.post("/record-debug", async (req, res) => {
   if (queryRes.status != 200) {
     res.status(queryRes.status).send(queryRes.data);
     console.log("err3 sendQuery");
+    return;
   }
 
   const stopRes = await sendStop(
@@ -232,6 +235,7 @@ app.post("/record-debug", async (req, res) => {
   if (stopRes.status != 200) {
     res.status(stopRes.status).send(stopRes.data);
     console.log("err4 sendStop");
+    return;
   }
 
   res.status(stopRes.status).send(stopRes.data);
