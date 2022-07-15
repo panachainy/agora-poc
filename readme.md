@@ -9,3 +9,4 @@
 - [Auth (generate token)](https://docs.agora.io/en/cloud-recording/token_server?platform=RESTful)
 - [Gen auth demo](https://webdemo.agora.io/token-builder/)
 - [Upgrade to token-based authentication](https://docs.agora.io/en/Agora%20Platform/faq/appid_to_token)
+- [Best Practices in Integrating Cloud Recording](https://docs.agora.io/en/cloud-recording/integration_best_practices?platform=RESTful)
